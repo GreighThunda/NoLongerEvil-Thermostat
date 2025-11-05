@@ -35,7 +35,7 @@ Before building, you'll need to install some required packages:
 
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential libusb-1.0-0-dev gcc
+sudo apt-get install build-essential libusb-1.0-0-dev gcc pkg-config
 ```
 
 #### macOS
