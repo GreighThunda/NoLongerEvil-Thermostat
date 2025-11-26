@@ -6,7 +6,7 @@
 
 <div align="center">
   <a href="https://bounties.fulu.org/bounties/nest-learning-thermostat-gen-1-2">
-    <img src="assets/fulu-bounties.svg" alt="FULU Bounties Winner" width="500">
+    <img src="assets/fulu-bounties.png" alt="FULU Bounties Winner" width="500">
   </a>
   <h2>🏆 FULU Bounty Winner 🏆</h2>
   <p><strong><a href="https://hackhouse.io">Hack House</a></strong> and this project are the official winners of the <strong><a href="https://bounties.fulu.org/bounties/nest-learning-thermostat-gen-1-2">FULU Bounty for Nest Learning Thermostat Gen 1/2</a></strong></p>
