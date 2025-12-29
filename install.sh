@@ -59,16 +59,46 @@ FIRMWARE_ZIP="$SCRIPT_DIR/bin/firmware-files.zip"
 mkdir -p "$SCRIPT_DIR/bin"
 mkdir -p "$FIRMWARE_DIR"
 
-# Check if firmware files already exist
-if [ -f "$FIRMWARE_DIR/x-load-gen1.bin" ] && [ -f "$FIRMWARE_DIR/x-load-gen2.bin" ] && [ -f "$FIRMWARE_DIR/u-boot.bin" ] && [ -f "$FIRMWARE_DIR/uImage" ]; then
+# Check if firmware files were recently downloaded (within last hour), if they were we skip downloading again
+SKIP_DOWNLOAD=false
+if [ -f "$FIRMWARE_DIR/x-load-gen2.bin" ]; then
+    REDOWNLOAD_DELAY=3600
+    CURRENT_TIME=$(date +%s)
+    FILE_MTIME=$(stat -c %W "$FIRMWARE_DIR/x-load-gen2.bin" 2>/dev/null || echo $(($REDOWNLOAD_DELAY + 1)))
+    TIME_DIFF=$((CURRENT_TIME - FILE_MTIME))
+
+    # Skip download if file was created within the last hour (3600 seconds)
+    if [ $TIME_DIFF -lt $REDOWNLOAD_DELAY ]; then
+        SKIP_DOWNLOAD=true
+    fi
+fi
+
+# Force download if --force-download flag is provided
+if [ "$1" = "--force-download" ]; then
+    SKIP_DOWNLOAD=false
+fi
+
+if [ "$SKIP_DOWNLOAD" = true ]; then
     echo "========================================="
-    echo "Firmware files already exist, skipping download"
+    echo "Firmware downloaded recently! Skipping..."
+    echo "(use '--force-download' to override)"
     echo "========================================="
     echo ""
 else
     echo "========================================="
     echo "Downloading firmware files..."
     echo "========================================="
+    echo ""
+
+    # Rename existing firmware files with their creation times as suffix
+    for fw_file in "$FIRMWARE_DIR"/{x-load-gen1,x-load-gen2,u-boot}.bin "$FIRMWARE_DIR"/uImage; do
+        if [ -f "$fw_file" ]; then
+            FILE_CTIME=$(stat -c %Y "$fw_file" 2>/dev/null || echo .bak)
+            FILE_NAME=$(basename "$fw_file")
+            mv "$fw_file" "$FIRMWARE_DIR/${FILE_NAME}.${FILE_CTIME}"
+            echo "Renamed old file: $FILE_NAME → ${FILE_NAME}.${FILE_CTIME}"
+        fi
+    done
     echo ""
 
     # Download firmware archive
